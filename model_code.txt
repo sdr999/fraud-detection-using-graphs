@@ -1,0 +1,65 @@
+import numpy as np # linear algebra
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+
+import os
+for dirname, _, filenames in os.walk('/kaggle/input'):
+    for filename in filenames:
+        print(os.path.join(dirname, filename))
+
+
+data = pd.read_csv("/kaggle/input/credit-card-fraud/card_transdata.csv")
+
+data.head().style.background_gradient(cmap='Blues')
+
+
+data.describe().style.set_properties(**{'background-color': 'black',                                                   
+                                    'color': 'lawngreen',                       
+                                    'border-color': 'white'})
+ 	
+data.info()
+
+data.dtypes
+
+
+data.isna().sum()
+
+
+import seaborn as sns
+corr = data.corr()
+sns.heatmap(corr,xticklabels=corr.columns,yticklabels=corr.columns,annot=True,cmap="hot")
+<AxesSubplot:>
+
+
+
+for i in data.columns[3:]:
+    print(data[i].value_counts())
+
+y = data["fraud"]
+x = data.drop("fraud",axis=1)
+
+
+from sklearn.model_selection import train_test_split
+x_train,x_test,y_train,y_test = train_test_split(x,y,test_size=0.33,random_state=0)
+
+
+
+from sklearn.linear_model import LogisticRegression
+
+regressor = LogisticRegression()
+regressor.fit(x_train,y_train)
+
+y_pred = regressor.predict(x_test)
+
+from sklearn.metrics import confusion_matrix,classification_report,precision_score, recall_score
+
+sns.heatmap(confusion_matrix(y_test,y_pred),annot=True,cmap="YlGnBu")
+<AxesSubplot:>
+
+
+
+print(classification_report(y_test,y_pred))
+              
+
+print(precision_score(y_test,y_pred))
+
+print(recall_score(y_test,y_pred))
